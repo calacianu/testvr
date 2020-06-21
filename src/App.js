@@ -3,6 +3,9 @@ import './App.css';
 
 import Marzipano from 'marzipano';
 
+import Menu from './components/Menu/Menu';
+import HotspotMenu from './components/Menu/HotspotMenu';
+
 class App extends Component {
 
   constructor(props) {
@@ -12,11 +15,13 @@ class App extends Component {
     this.destinationScene = null;
 
     this.state = {
-      isHotSpotActive: false
+      isHotSpotActive: false,
+      showHotspotMenu: false,
+      hotSpotMenuPositon: {
+        x: 0,
+        y: 0
+      }
     };
-
-    this.lastX = 0;
-    this.lastY = 0;
   }
 
   componentDidMount() {
@@ -39,7 +44,7 @@ class App extends Component {
     this.scene = scene;
     const destinationScene = this.createScene("http://localhost:3000/SAM_101_0472.jpg", geometry, view);
     this.destinationScene = destinationScene;
-    this.createHotSpot(scene, destinationScene);
+    // this.createHotSpot(scene, destinationScene);
 
     this.imgHotspot = null;
 
@@ -78,7 +83,17 @@ class App extends Component {
       this.imgHotspot.setAttribute('draggable', true);
       this.imgHotspot.src = 'http://web-apps.ro/projects/marzipano/spot.jpeg';
       this.imgHotspot.classList.add('hotspot');
-      this.imgHotspot.addEventListener('click', () => {
+      this.imgHotspot.addEventListener('click', e => {
+        this.setState({
+          showHotspotMenu: true,
+          hotSpotMenuPositon: {
+            x: e.clientX,
+            y: e.clientY
+          }
+        }, () => {
+          console.log(this.state);
+        });
+        // asta-i bun
         // this.switchScene(destinationScene, destinationViewParameters);
 
         // Marzipano.Scene.switchScene(destinationScene, { transitionDuration: 400 });
@@ -107,10 +122,7 @@ class App extends Component {
   eleMouseMove = e => {
     var pX = e.clientX;
     var pY = e.clientY;
-    // this.imgHotspot.style.left = pX + "px";
-    // this.imgHotspot.style.top = pY + "px";
-
-    this.imgHotspot.style.transform = `translateX(${pX}px) translateY(${pY}px) translateZ(0px)`;
+    this.imgHotspot.style.transform = `translateX(${pX}px) translateY(${pY - 50}px) translateZ(0px)`;
     document.addEventListener("mouseup", this.eleMouseUp, false);
   }
 
@@ -119,15 +131,25 @@ class App extends Component {
     document.removeEventListener("mouseup", this.eleMouseUp, false);
   }
 
+  addHotspotOnClick = e => {
+    this.setState({
+      isHotSpotActive: true
+    });
+    // const { yaw, pitch } = this.view.screenToCoordinates({ x: e.clientX, y: e.clientY });
+    const { yaw, pitch } = this.view.screenToCoordinates({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    this.createHotSpot(this.scene, this.destinationScene, yaw, pitch);
+  };
+
   render() {
     return (
-      <div ref={pano => this.pano = pano} id="pano" onClick={e => {
-        this.setState({
-          isHotSpotActive: true
-        });
-        const { yaw, pitch } = this.view.screenToCoordinates({ x: e.clientX, y: e.clientY });
-        this.createHotSpot(this.scene, this.destinationScene, yaw, pitch);
-      }} />
+      <>
+        <Menu onClickFunction={this.addHotspotOnClick} />
+        {this.state.showHotspotMenu && 
+          <HotspotMenu 
+            styleMenu={`translateX(${this.state.hotSpotMenuPositon.x}px) translateY(${this.state.hotSpotMenuPositon.y - 100}px) translateZ(0px)`}
+          />}
+        <div ref={pano => this.pano = pano} id="pano" onClick={e => this.addHotspotOnClick(e)} />
+      </>
     );
   }
 }

@@ -1,4 +1,5 @@
 #pano {
+  margin-top: 50px;
   height: 1200px;
   width: 1600px;
 }
@@ -9,4 +10,23 @@
   background: #ccc;
   position: absolute;
   cursor: pointer;
+}
+
+.menu {
+  height: 50px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 11;
+}
+
+.hotspot-menu {
+  position: absolute;
+  z-index: 1;
+  background: white;
+  padding: 10px;
+}
+
+.hotspot-menu-item {
+  margin: 5px;
 }
