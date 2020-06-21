@@ -14,6 +14,9 @@ class App extends Component {
     this.state = {
       isHotSpotActive: false
     };
+
+    this.lastX = 0;
+    this.lastY = 0;
   }
 
   componentDidMount() {
@@ -101,19 +104,17 @@ class App extends Component {
     console.log('mouse down');
   }
 
-  eleMouseMove = ev => {
-    var pX = ev.clientX;
-    var pY = ev.clientY;
+  eleMouseMove = e => {
+    var pX = e.clientX;
+    var pY = e.clientY;
+    // this.imgHotspot.style.left = pX + "px";
+    // this.imgHotspot.style.top = pY + "px";
 
-    const { yaw, pitch } = this.view.screenToCoordinates({ x: ev.clientX, y: ev.clientY });
-    
-    this.imgHotspot.style.left = pX + "px";
-    this.imgHotspot.style.top = pY + "px";
-
+    this.imgHotspot.style.transform = `translateX(${pX}px) translateY(${pY}px) translateZ(0px)`;
     document.addEventListener("mouseup", this.eleMouseUp, false);
   }
 
-  eleMouseUp = () => {
+  eleMouseUp = e => {
     document.removeEventListener("mousemove", this.eleMouseMove, false);
     document.removeEventListener("mouseup", this.eleMouseUp, false);
   }
